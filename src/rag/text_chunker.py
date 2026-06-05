@@ -1,8 +1,14 @@
-def chunk_text(text, chunk_size=100):
+def chunk_text(text):
+
+    paragraphs = text.split("\n\n")
 
     chunks = []
 
-    for i in range(0, len(text), chunk_size):
-        chunks.append(text[i:i + chunk_size])
+    for paragraph in paragraphs:
+
+        paragraph = paragraph.strip()
+
+        if paragraph:
+            chunks.append(paragraph)
 
     return chunks
