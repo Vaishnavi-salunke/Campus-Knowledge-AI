@@ -4,6 +4,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from document_loader import load_documents
 from text_chunker import chunk_text
 
+from dotenv import load_dotenv
+from google import genai
+import os
+
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
 
 def create_vector_store():
 
@@ -50,10 +60,10 @@ def retrieve(query, vector_store, model):
             best_score = similarity
             best_chunk = item["chunk"]
 
-        if best_score < 0.5:
-           return "I could not find relevant information in the knowledge base."
+    if best_score < 0.3:
+        return "I could not find relevant information in the knowledge base."
 
-        return best_chunk
+    return best_chunk
 
 
 vector_store, model = create_vector_store()
@@ -65,7 +75,28 @@ while True:
     if question.lower() == "exit":
         break
 
-    answer = retrieve(question, vector_store, model)
+    context = retrieve(question, vector_store, model)
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=f"""
+You are a helpful college information assistant.
+
+Use ONLY the provided context to answer the question.
+
+Give a natural and concise answer.
+Do not copy the context word-for-word.
+
+Context:
+{context}
+
+Question:
+{question}
+
+If the answer is not available in the context, reply exactly:
+I could not find relevant information in the documents.
+"""
+    )
 
     print("\nAnswer:")
-    print(answer)
+    print(response.text)
