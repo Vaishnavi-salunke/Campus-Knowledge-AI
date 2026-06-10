@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from src.rag.rag_engine import ask_ai
 
@@ -11,16 +12,51 @@ st.set_page_config(
 with st.sidebar:
 
     st.title("🎓 Campus Knowledge AI")
+     # Document Selector
+    document_names = []
+
+    if os.path.exists("data"):
+
+        document_names = [
+            file
+            for file in os.listdir("data")
+            if file.endswith(".pdf") or file.endswith(".txt")
+        ]
+
+    selected_document = st.selectbox(
+        "📄 Search In",
+        ["All Documents"] + document_names
+    )
+
+
     uploaded_files = st.file_uploader(
-    "📄 Upload College Documents",
-    type=["pdf", "txt"],
-    accept_multiple_files=True
-)
+        "📄 Upload College Documents",
+        type=["pdf", "txt"],
+        accept_multiple_files=True
+    )
 
 if uploaded_files:
 
+    os.makedirs("data", exist_ok=True)
+
+    for file in uploaded_files:
+
+        file_path = os.path.join(
+            "data",
+            file.name
+        )
+
+        with open(
+            file_path,
+            "wb"
+        ) as f:
+
+            f.write(
+                file.getbuffer()
+            )
+
     st.success(
-        f"{len(uploaded_files)} document(s) uploaded"
+        f"{len(uploaded_files)} document(s) uploaded successfully"
     )
 
     st.subheader("Uploaded Documents")
@@ -28,7 +64,7 @@ if uploaded_files:
     for file in uploaded_files:
 
         st.write(f"📄 {file.name}")
-        
+
     st.markdown("---")
 
     st.subheader("System Status")
@@ -39,7 +75,7 @@ if uploaded_files:
     st.subheader("AI Models")
 
     st.markdown("""
-    - Gemini 2.5 Flash
+    - Groq (Llama 3.3 70B)
     - all-MiniLM-L6-v2
     - Cosine Similarity Search
     """)
@@ -49,7 +85,9 @@ if uploaded_files:
     st.subheader("Knowledge Base")
 
     st.markdown("""
-    - college_info.txt
+    - Files from data folder
+    - Uploaded PDFs
+    - Uploaded TXT files
     """)
 
     st.markdown("---")
@@ -67,7 +105,7 @@ if uploaded_files:
 st.title("🎓 Campus Knowledge AI Assistant")
 
 st.caption(
-    "Retrieval-Augmented Generation (RAG) using Sentence Transformers and Gemini 2.5 Flash"
+    "Retrieval-Augmented Generation (RAG) using Sentence Transformers and Groq Llama 3.3 70B"
 )
 
 if "messages" not in st.session_state:
@@ -96,7 +134,7 @@ if question:
 
     with st.spinner("Searching knowledge base..."):
 
-        answer, context, score = ask_ai(question)
+        answer, context, score,source = ask_ai(question, selected_document)
 
     with st.chat_message("assistant"):
         st.markdown(answer)
@@ -113,6 +151,9 @@ if question:
         st.metric(
             "Similarity Score",
             f"{score:.3f}"
+        )
+        st.write(
+           f"📄 Source Document: {source}"
         )
 
         st.text_area(

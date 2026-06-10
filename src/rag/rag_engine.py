@@ -73,7 +73,12 @@ def create_vector_store():
     return vector_store, model
 
 
-def retrieve(query, vector_store, model):
+def retrieve(
+    query,
+    vector_store,
+    model,
+    selected_document="All Documents"
+):
 
     query_embedding = model.encode(
         query,
@@ -83,6 +88,12 @@ def retrieve(query, vector_store, model):
     scores = []
 
     for item in vector_store:
+
+        if (
+            selected_document != "All Documents"
+            and item["source"] != selected_document
+        ):
+            continue
 
         similarity = cosine_similarity(
             [query_embedding],
@@ -103,7 +114,7 @@ def retrieve(query, vector_store, model):
     )
 
     if not scores:
-        return "", 0.0
+        return "", 0.0, "No Source Found"
 
     top_chunks = scores[:3]
 
@@ -113,7 +124,6 @@ def retrieve(query, vector_store, model):
         top_chunks,
         start=1
     ):
-
         print(
             f"{rank}. Score={score:.4f} | Source={source}"
         )
@@ -124,19 +134,22 @@ def retrieve(query, vector_store, model):
 
     best_score = top_chunks[0][0]
 
-    return context, best_score
+    source = top_chunks[0][2]
+
+    return context, best_score, source
 
 
 # Create vector store once
 vector_store, model = create_vector_store()
 
 
-def ask_ai(question):
+def ask_ai(question, selected_document="All Documents"):
 
-    context, score = retrieve(
+    context, score, source = retrieve(
         question,
         vector_store,
-        model
+        model,
+        selected_document
     )
 
     print(f"\nBest Similarity Score: {score:.4f}")
@@ -146,7 +159,8 @@ def ask_ai(question):
         return (
             "I could not find relevant information in the documents.",
             context,
-            score
+            score,
+            source
         )
 
     prompt = f"""
@@ -167,3 +181,22 @@ Context:
 Question:
 {question}
 """
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
+
+    answer = response.choices[0].message.content
+
+    return (
+        answer,
+        context,
+        score,
+        source
+    )
