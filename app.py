@@ -1,16 +1,60 @@
-from src.rag.document_loader import load_documents
-from src.rag.text_chunker import chunk_text
+import streamlit as st
 
-documents = load_documents()
+from src.rag.rag_engine import ask_ai
 
-for doc in documents:
+st.set_page_config(
+    page_title="Campus Knowledge AI Assistant",
+    page_icon="🎓",
+    layout="wide"
+)
 
-    print(f"\nDocument: {doc['filename']}")
+st.title("🎓 Campus Knowledge AI Assistant")
 
-    chunks = chunk_text(doc["content"])
+st.caption(
+    "Retrieval-Augmented Generation (RAG) using Sentence Transformers"
+)
 
-    print("\nChunks:")
+question = st.text_input(
+    "Ask a question about the college..."
+)
 
-    for idx, chunk in enumerate(chunks, start=1):
-        print(f"\nChunk {idx}:")
-        print(chunk)
+if question:
+
+    try:
+
+        with st.spinner(
+            "Searching knowledge base..."
+        ):
+
+            answer, context, score = ask_ai(
+                question
+            )
+
+        if score < 0.25:
+
+            st.warning(
+                "Low confidence result. The answer may not be present in the documents."
+            )
+
+        st.success(answer)
+
+        with st.expander(
+            "🔍 Retrieval Details",
+            expanded=True
+        ):
+
+            st.write(
+                f"Similarity Score: {score:.3f}"
+            )
+
+            st.text_area(
+                "Retrieved Context",
+                context,
+                height=300
+            )
+
+    except Exception as e:
+
+        st.error(
+            f"Application Error: {e}"
+        )

@@ -1,17 +1,25 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from document_loader import load_documents
-from text_chunker import chunk_text
+from src.rag.document_loader import load_documents
+from src.rag.text_chunker import chunk_text
 
 from dotenv import load_dotenv
 from google import genai
 import os
 
+# Load environment variables
 load_dotenv()
 
+api_key = os.getenv("GEMINI_API_KEY")
+
+if not api_key:
+    raise ValueError("GEMINI_API_KEY not found in .env file")
+
+print("API Key:", api_key[:10])
+
 client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+    api_key=api_key
 )
 
 
@@ -23,6 +31,8 @@ def create_vector_store():
 
     for document in documents:
         chunks.extend(chunk_text(document["content"]))
+
+    print(f"\nTotal Chunks Created: {len(chunks)}")
 
     model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -38,6 +48,8 @@ def create_vector_store():
                 "embedding": embedding
             }
         )
+
+    print("Vector Store Created Successfully")
 
     return vector_store, model
 
@@ -60,12 +72,15 @@ def retrieve(query, vector_store, model):
             best_score = similarity
             best_chunk = item["chunk"]
 
+    print(f"\nBest Similarity Score: {best_score:.4f}")
+
     if best_score < 0.3:
         return "I could not find relevant information in the knowledge base."
 
     return best_chunk
 
 
+# Create Vector Store Once
 vector_store, model = create_vector_store()
 
 while True:
@@ -77,15 +92,13 @@ while True:
 
     context = retrieve(question, vector_store, model)
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=f"""
-You are a helpful college information assistant.
+    print("\nRetrieved Context:")
+    print(context[:1000])
 
-Use ONLY the provided context to answer the question.
+    try:
 
-Give a natural and concise answer.
-Do not copy the context word-for-word.
+        prompt = f"""
+Answer ONLY using the context below.
 
 Context:
 {context}
@@ -93,10 +106,18 @@ Context:
 Question:
 {question}
 
-If the answer is not available in the context, reply exactly:
-I could not find relevant information in the documents.
+If the answer is not present in the context, say:
+'I could not find the answer in the knowledge base.'
 """
-    )
 
-    print("\nAnswer:")
-    print(response.text)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",
+            contents=prompt
+        )
+
+        print("\nAnswer:")
+        print(response.text)
+
+    except Exception as e:
+
+        print(f"\nGemini Error: {e}")
