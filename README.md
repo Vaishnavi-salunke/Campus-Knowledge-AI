@@ -73,20 +73,22 @@ Campus-Knowledge-AI
 Add screenshots of:
 
 * Home Page
+  
   <img width="1904" height="879" alt="image" src="https://github.com/user-attachments/assets/0cdf5e5c-1a30-4a23-a630-bb798ac21907" />
 
  
 
 * Question Answering Interface
+  
   <img width="1876" height="866" alt="image" src="https://github.com/user-attachments/assets/0a4e0365-ec6d-4cdc-b8f5-0ee3823bc345" />
 
-  
-  
- <img width="1895" height="877" alt="image" src="https://github.com/user-attachments/assets/713c00b3-56db-49c5-b3c8-aa0b9932c9c5" />
+
+  <img width="1895" height="877" alt="image" src="https://github.com/user-attachments/assets/713c00b3-56db-49c5-b3c8-aa0b9932c9c5" />
 
   
 
 * Retrieval Details Panel
+  
   <img width="1898" height="871" alt="image" src="https://github.com/user-attachments/assets/51e77ad2-cb1d-4fb4-a599-e1f3124f61ea" />
 
 
