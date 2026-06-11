@@ -1,14 +1,14 @@
-streamlit
-groq
-python-dotenv
+streamlit==1.45.1
+groq==0.26.0
+python-dotenv==1.1.0
 
-sentence-transformers
-scikit-learn
-numpy
-torch
-transformers
+sentence-transformers==2.7.0
+scikit-learn==1.5.1
+numpy==1.26.4
+torch==2.3.1
+transformers==4.41.2
 
-pypdf
-Pillow
+PyPDF2==3.0.1
+Pillow==10.4.0
 
-huggingface_hub
+huggingface_hub==0.23.4
