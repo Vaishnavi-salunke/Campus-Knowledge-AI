@@ -9,8 +9,6 @@ torch
 transformers
 
 PyPDF2
-pdf2image
-pytesseract
 Pillow
 
 huggingface_hub
