@@ -79,8 +79,10 @@ Add screenshots of:
 
 * Question Answering Interface
   <img width="1876" height="866" alt="image" src="https://github.com/user-attachments/assets/0a4e0365-ec6d-4cdc-b8f5-0ee3823bc345" />
+
   
-<img width="1895" height="877" alt="image" src="https://github.com/user-attachments/assets/713c00b3-56db-49c5-b3c8-aa0b9932c9c5" />
+  
+ <img width="1895" height="877" alt="image" src="https://github.com/user-attachments/assets/713c00b3-56db-49c5-b3c8-aa0b9932c9c5" />
 
   
 
