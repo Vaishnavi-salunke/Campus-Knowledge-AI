@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 streamlit run streamlit_app.py
 ```
-
+## 🔑 Environment Variables
 Create a `.env` file and add:
 
 ```env
