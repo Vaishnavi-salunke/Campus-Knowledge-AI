@@ -11,6 +11,24 @@ The system processes PDF and TXT documents, retrieves the most relevant informat
 **GitHub Repository:** https://github.com/Vaishnavi-salunke/Campus-Knowledge-AI/edit/main/README.md
 
 ---
+## ▶️ Run Locally
+
+```bash
+git clone https://github.com/vaishnavi-salunke/Campus-Knowledge-AI.git
+
+cd Campus-Knowledge-AI
+
+pip install -r requirements.txt
+
+streamlit run streamlit_app.py
+```
+
+Create a `.env` file and add:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+```
+
 
 ## ✨ Features
 
@@ -57,14 +75,34 @@ Campus-Knowledge-AI
 └── .gitignore
 ```
 
+## 📖 How to Use
+
+1. Open the application.
+2. Select **All Documents** or choose the available brochure from the document selector.
+3. Enter a question related to admissions, seat allocation, eligibility criteria, quotas, or other information available in the brochure.
+4. The system retrieves the most relevant content using semantic search.
+5. Groq Llama 3.3 70B generates an answer based only on the retrieved document context.
+6. View the similarity score, source document, and retrieved context in the **Retrieval Details** section.
+
+### Example Questions
+
+* What is the allocation of seats for engineering and technology courses?
+* What is the Institutional Quota?
+* What are CAP seats?
+* How are seats distributed among different categories?
+* What is the eligibility criteria for undergraduate technical courses?
+* Explain the Centralized Admission Process (CAP).
+  
+---
+
 ## ⚙️ How It Works
 
-1. Load PDF/TXT documents
-2. Extract and chunk text
-3. Generate embeddings using all-MiniLM-L6-v2
-4. Perform semantic retrieval using cosine similarity
-5. Send retrieved context to Groq Llama 3.3 70B
-6. Generate accurate answers grounded in document content
+1. Documents are loaded from the knowledge base.
+2. Text is split into smaller chunks.
+3. Sentence Transformers generate embeddings for each chunk.
+4. Cosine similarity identifies the most relevant content.
+5. Retrieved context is sent to Groq Llama 3.3 70B.
+6. The model generates an answer grounded in the retrieved information.
 
 ---
 
@@ -96,11 +134,13 @@ Add screenshots of:
 
 ## 🔮 Future Improvements
 
-* OCR support for scanned PDFs
-* Multi-document filtering
+* OCR support for scanned PDF documents
+* Dynamic indexing of newly uploaded documents
 * Persistent vector database
-* Hybrid search
-* Multi-file upload indexing
+* Multi-document search and filtering
+* Hybrid keyword + semantic retrieval
+* Citation-based responses
+
 
 ---
 
